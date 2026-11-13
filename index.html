@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bikini Bottom Cloud Quiz 🧽🌊</title>
+  <!-- Library QR Code ringan -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    :root {
+      --ocean-top: #00b4d8;
+      --ocean-mid: #0077b6;
+      --ocean-deep: #03045e;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --sponge-yellow: #ffe135;
+      --sponge-yellow-dark: #f4c400;
+      --sponge-brown: #7f4f24;
+      --coral-pink: #ff6b8b;
+      --seaweed-green: #16a34a;
+      --danger-red: #dc2626;
+      --text-dark: #0f172a;
+      --text-muted: #475569;
+      --gold: #f59e0b;
+      --silver: #64748b;
+      --bronze: #b45309;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Comic Sans MS', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--ocean-top) 0%, var(--ocean-mid) 55%, var(--ocean-deep) 100%);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bubbles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -80px;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.85), rgba(144, 224, 239, 0.25));
+      border: 1.5px solid rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    .bubble:nth-child(1) { width: 28px; height: 28px; left: 8%; animation-duration: 9s; }
+    .bubble:nth-child(2) { width: 45px; height: 45px; left: 22%; animation-duration: 13s; animation-delay: 2s; }
+    .bubble:nth-child(3) { width: 20px; height: 20px; left: 40%; animation-duration: 8s; animation-delay: 4s; }
+    .bubble:nth-child(4) { width: 52px; height: 52px; left: 65%; animation-duration: 14s; animation-delay: 1s; }
+    .bubble:nth-child(5) { width: 32px; height: 32px; left: 82%; animation-duration: 10s; animation-delay: 3s; }
+    .bubble:nth-child(6) { width: 18px; height: 18px; left: 92%; animation-duration: 7s; animation-delay: 5s; }
+
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 0.75; }
+      50% { transform: translateY(-50vh) translateX(12px) scale(1.05); opacity: 0.85; }
+      100% { transform: translateY(-110vh) translateX(-10px) scale(1.1); opacity: 0; }
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      background: var(--card-bg);
+      border: 4px solid var(--sponge-yellow);
+      border-radius: 26px;
+      padding: 24px;
+      box-shadow: 0 18px 36px rgba(3, 4, 94, 0.45), 0 0 0 4px rgba(0, 180, 216, 0.35);
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(8px);
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      width: 14px;
+      height: 14px;
+      background: rgba(244, 196, 0, 0.25);
+      border-radius: 50%;
+      box-shadow: -20px 8px 0 3px rgba(244, 196, 0, 0.2), -8px 22px 0 -2px rgba(244, 196, 0, 0.25);
+      pointer-events: none;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #e0f2fe;
+      color: var(--ocean-mid);
+      border: 1.5px solid #7dd3fc;
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 4px 11px;
+      border-radius: 999px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .qr-trigger-btn {
+      background: #fef9c3;
+      color: var(--sponge-brown);
+      border: 1.5px solid var(--sponge-brown);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    h1 {
+      font-size: 1.65rem;
+      line-height: 1.25;
+      margin-bottom: 10px;
+      color: var(--ocean-deep);
+      font-weight: 900;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ocean-mid);
+      margin-bottom: 6px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 2px solid #90e0ef;
+      background: #f0f9ff;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--ocean-mid);
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.25);
+    }
+
+    .error-msg {
+      color: var(--danger-red);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .already-played-box {
+      background: #fef9c3;
+      border: 2px solid var(--sponge-yellow-dark);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+      color: var(--sponge-brown);
+    }
+
+    .already-played-box h3 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    .already-played-box p {
+      font-size: 0.85rem;
+      color: #713f12;
+      margin-bottom: 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid var(--sponge-brown);
+      border-radius: 14px;
+      background: linear-gradient(180deg, var(--sponge-yellow), var(--sponge-yellow-dark));
+      color: var(--sponge-brown);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--sponge-brown);
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 var(--sponge-brown);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #e0f2fe;
+      color: var(--ocean-mid);
+      border: 2px solid #38bdf8;
+      box-shadow: 0 4px 0 #0284c7;
+      margin-top: 12px;
+    }
+
+    .btn-secondary:active {
+      box-shadow: 0 1px 0 #0284c7;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 4, 94, 0.72);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 50;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 4px solid var(--sponge-yellow);
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #qrcode-box {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      background: #f0f9ff;
+      border: 2px dashed #38bdf8;
+      border-radius: 16px;
+      margin: 14px 0;
+    }
+
+    .url-preview {
+      font-size: 0.78rem;
+      color: var(--ocean-mid);
+      background: #e0f2fe;
+      padding: 6px 10px;
+      border-radius: 8px;
+      word-break: break-all;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ocean-mid);
+    }
+
+    .score-pill {
+      background: var(--sponge-yellow);
+      color: var(--sponge-brown);
+      border: 1.5px solid var(--sponge-brown);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+
+    .timer-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #e0f2fe;
+      border: 1.5px solid #7dd3fc;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .timer-bar-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--ocean-top);
+      transition: width 0.1s linear, background-color 0.3s;
+    }
+
+    .question-text {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--ocean-deep);
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 13px 16px;
+      border-radius: 14px;
+      border: 2px solid #bae6fd;
+      background: #f0f9ff;
+      color: var(--text-dark);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--ocean-mid);
+      background: #e0f2fe;
+      transform: translateX(3px);
+    }
+
+    .option-btn.correct {
+      background: #dcfce7;
+      border-color: var(--seaweed-green);
+      color: #14532d;
+      font-weight: 700;
+    }
+
+    .option-btn.wrong {
+      background: #fee2e2;
+      border-color: var(--danger-red);
+      color: #7f1d1d;
+    }
+
+    .feedback-box {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.is-correct { background: #dcfce7; border: 2px solid #86efac; color: #14532d; }
+    .feedback-box.is-wrong { background: #fee2e2; border: 2px solid #fca5a5; color: #7f1d1d; }
+
+    .result-card { text-align: center; }
+
+    .final-score-box {
+      background: linear-gradient(135deg, #e0f2fe, #fef9c3);
+      border: 2px solid var(--ocean-top);
+      border-radius: 18px;
+      padding: 16px;
+      margin: 14px 0;
+    }
+
+    .final-score-number {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--ocean-deep);
+      line-height: 1.1;
+    }
+
+    .leaderboard-box {
+      background: #f0f9ff;
+      border: 2px solid #7dd3fc;
+      border-radius: 18px;
+      padding: 16px;
+      margin: 16px 0;
+      text-align: left;
+    }
+
+    .leaderboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px dashed #bae6fd;
+    }
+
+    .leaderboard-header h3 { font-size: 0.95rem; font-weight: 800; color: var(--ocean-deep); }
+
+    .refresh-btn {
+      background: var(--sponge-yellow);
+      color: var(--sponge-brown);
+      border: 1.5px solid var(--sponge-brown);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .leaderboard-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 290px;
+      overflow-y: auto;
+    }
+
+    .lb-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      background: #ffffff;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      border: 1.5px solid #e0f2fe;
+    }
+
+    .lb-item.is-me { border-color: var(--ocean-mid); background: #fef9c3; }
+    .lb-left { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+
+    .lb-rank {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      color: var(--ocean-mid);
+      font-weight: 800;
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-1 { background: #fef08a; color: var(--gold); border: 1.5px solid var(--gold); }
+    .rank-2 { background: #f1f5f9; color: var(--silver); border: 1.5px solid var(--silver); }
+    .rank-3 { background: #ffedd5; color: var(--bronze); border: 1.5px solid var(--bronze); }
+
+    .lb-name {
+      font-weight: 700;
+      color: var(--ocean-deep);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 195px;
+    }
+
+    .lb-meta { font-size: 0.72rem; color: var(--text-muted); display: block; }
+    .lb-score { font-weight: 800; color: var(--ocean-mid); font-size: 0.92rem; flex-shrink: 0; }
+    .hidden { display: none !important; }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--ocean-mid);
+      font-weight: 600;
+      margin-top: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bubbles">
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+    <div class="bubble"></div><div class="bubble"></div><div class="bubble"></div>
+  </div>
+
+  <!-- MODAL QR CODE OTOMATIS -->
+  <div id="qr-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <span class="badge" style="margin-bottom: 8px;">📲 Scan untuk Join</span>
+      <h2 style="font-size: 1.25rem; color: var(--ocean-deep); font-weight: 900;">QR Code Cloud Quiz</h2>
+      <p style="font-size: 0.82rem; margin-bottom: 6px;">Arahkan kamera HP ke QR Code di bawah ini:</p>
+      <div id="qrcode-box"></div>
+      <div class="url-preview" id="qr-url-text"></div>
+      <button class="btn" id="close-qr-btn">Tutup QR Code</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- SCREEN 1: WELCOME -->
+    <div id="start-screen">
+      <div class="top-bar">
+        <span class="badge">🌊 Bikini Bottom Cloud Edition</span>
+        <button class="qr-trigger-btn" id="open-qr-btn">📲 QR Join</button>
+      </div>
+      <h1>Siap-Siap Cloud Quiz! 🧽🍍</h1>
+      <p>Uji pengetahuan <strong>Cloud Computing</strong> kamu! Kuis hanya bisa dikerjakan <strong>1 kali</strong>—jawab cepat dan tepat untuk masuk ke <strong>Top 10 Klasemen Kelas</strong>.</p>
+      
+      <div id="new-player-form">
+        <div class="input-group">
+          <label for="player-select">Pilih Nama & Kelompok Kamu</label>
+          <select id="player-select">
+            <option value="">-- Pilih Nama - Kelompok --</option>
+          </select>
+          <div class="error-msg" id="name-error-msg">Silakan pilih nama kamu dulu!</div>
+        </div>
+        <button class="btn" id="start-btn">Aku Siap! Mulai Kuis 🧽</button>
+      </div>
+
+      <div id="locked-notice" class="already-played-box hidden">
+        <h3>🔒 Kamu Sudah Mengerjakan Kuis!</h3>
+        <p id="locked-detail-text">Setiap peserta hanya memiliki 1 kali kesempatan bermain.</p>
+      </div>
+
+      <button class="btn btn-secondary" id="view-lb-btn">Lihat Top 10 Klasemen 🏆</button>
+      <div class="footer-note">Sistem Terdistribusi • 1x Kesempatan Bermain</div>
+    </div>
+
+    <!-- SCREEN 2: QUIZ -->
+    <div id="quiz-screen" class="hidden">
+      <div class="quiz-header">
+        <span id="question-counter">Soal 1 / 9</span>
+        <span class="score-pill">⭐ Skor: <span id="current-score">0</span></span>
+      </div>
+
+      <div class="timer-bar-bg">
+        <div class="timer-bar-fill" id="timer-bar"></div>
+      </div>
+
+      <div class="question-text" id="question-text">Memuat pertanyaan...</div>
+      <div class="options-list" id="options-list"></div>
+      <div class="feedback-box" id="feedback-box"></div>
+      <button class="btn hidden" id="next-btn">Lanjut Menyelam →</button>
+    </div>
+
+    <!-- SCREEN 3: RESULT & TOP 10 -->
+    <div id="result-screen" class="hidden result-card">
+      <div class="top-bar">
+        <span class="badge" id="result-badge">🎉 Misi Selesai!</span>
+        <button class="qr-trigger-btn" id="open-qr-btn-2">📲 QR Join</button>
+      </div>
+      <h1 id="result-title">Top 10 Bikini Bottom 🏆</h1>
+
+      <div class="final-score-box" id="my-score-summary">
+        <div style="font-size: 0.78rem; font-weight: 700; color: var(--ocean-mid);">SKOR FINAL KAMU (<span id="display-player-name">-</span>)</div>
+        <div class="final-score-number" id="final-score">0</div>
+        <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 4px;">
+          Benar: <strong style="color: var(--ocean-deep);" id="correct-count">0/9</strong> • 
+          Rata-rata: <strong style="color: var(--ocean-deep);" id="avg-time">0.0s</strong>
+        </div>
+      </div>
+
+      <div class="leaderboard-box">
+        <div class="leaderboard-header">
+          <h3>🌊 Top 10 Skor Tertinggi</h3>
+          <button class="refresh-btn" id="refresh-lb-btn">↻ Refresh</button>
+        </div>
+        <ul class="leaderboard-list" id="leaderboard-list">
+          <li style="text-align: center; color: var(--text-muted); font-size: 0.85rem; padding: 12px;">
+            Memuat data klasemen...
+          </li>
+        </ul>
+      </div>
+
+      <button class="btn" id="back-home-btn">Kembali ke Halaman Utama 🍍</button>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // TEMPEL PROJECT URL & ANON PUBLIC KEY DARI SUPABASE DI SINI
+    // =========================================================================
+    const SUPABASE_URL = "https://lewtgjnhztzgympsqatz.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxld3Rnam5oenR6Z3ltcHNxYXR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwMjE5MDcsImV4cCI6MjEwOTU5NzkwN30.JDYt3PK_ICRSvwN1FmqAsU2-vgWmzAKqab1HEQBoEwI";
+    const LOCK_STORAGE_KEY = "cloud_quiz_k4_live_v1";
+
+    function getSupabaseHeaders(extra = {}) {
+      const headers = {
+        "apikey": SUPABASE_ANON_KEY,
+        ...extra
+      };
+      // Header Authorization hanya dipakai jika kunci bertipe JWT (eyJ...)
+      if (SUPABASE_ANON_KEY.startsWith("eyJ")) {
+        headers["Authorization"] = `Bearer ${SUPABASE_ANON_KEY}`;
+      }
+      return headers;
+    }
+
+    async function isNameAlreadyUsed(nameToCheck) {
+      if (isSupabaseConfigured()) {
+        try {
+          const cleanUrl = SUPABASE_URL.replace(/\/$/, "");
+          const res = await fetch(`${cleanUrl}/rest/v1/scores?name=eq.${encodeURIComponent(nameToCheck)}&select=id`, {
+            headers: getSupabaseHeaders()
+          });
+          const data = await res.json();
+          return Array.isArray(data) && data.length > 0;
+        } catch (err) {
+          console.error("Gagal cek nama di Supabase:", err);
+        }
+      }
+      const localScores = JSON.parse(localStorage.getItem("cloud_quiz_scores") || "[]");
+      return localScores.some(item => item.name === nameToCheck);
+    }
+
+    const GROUPS_DATA = [
+      {
+        group: "Kelompok 1",
+        members: ["Lailatul Qodariah", "Adam Fadli", "Ibrahim Hilal", "Sabbicarel Edward Piris"]
+      },
+      {
+        group: "Kelompok 2",
+        members: ["Indri Setiawati", "Kamalul Iman", "Ummu Badriyah Mualifah", "Maddinatul Dzahra Au..."]
+      },
+      {
+        group: "Kelompok 3",
+        members: ["Farhan Mohamad You...", "Muhammad 'Arif Nur S...", "Adel Zamalya", "Ahmad Miftah Hadi Pr..."]
+      },
+      {
+        group: "Kelompok 4",
+        members: ["Intan Fairuz Nur Asiyah", "Pasya Nur Rizki", "Nurkhotimah", "Luthfi Baihaqi"]
+      },
+      {
+        group: "Kelompok 5",
+        members: ["Mohamad Fariz Rachm...", "Muhammad Raffi", "Tiara Salsabila", "Chantika Maharani"]
+      },
+      {
+        group: "Kelompok 6",
+        members: ["Rifa'ah Fatihatu Sa'adah", "Euis Fahira Yuningsih", "Rizki Aidil Fazri"]
+      }
+    ];
+
+    const questions = [
+      {
+        q: "Ilustrasi apakah yang kelompok 4 pakai untuk menganalogikan IaaS, PaaS, dan SaaS?",
+        options: ["Tempe", "Spongebob", "Pizza", "Server"],
+        answer: 2,
+        explanation: "Tepat! Kelompok 4 memakai analogi Pizza untuk menjelaskan perbedaan kontrol pada IaaS, PaaS, dan SaaS."
+      },
+      {
+        q: "Kamu menyewa VPS kosong di DigitalOcean, lalu meng-install Ubuntu, Nginx, dan MySQL sendiri. Model layanan apakah ini?",
+        options: ["SaaS (Software as a Service)", "PaaS (Platform as a Service)", "IaaS (Infrastructure as a Service)", "FaaS (Function as a Service)"],
+        answer: 2,
+        explanation: "Tepat! Karena kamu masih mengelola Sistem Operasi (OS) hingga konfigurasi servernya sendiri, ini masuk kategori IaaS."
+      },
+      {
+        q: "Saat Flash Sale 11.11, jumlah container server otomatis bertambah dari 5 menjadi 200 dalam hitungan detik mengikuti lonjakan trafik. Ciri NIST apa ini?",
+        options: ["Broad Network Access", "Rapid Elasticity", "Measured Service", "Location Transparency"],
+        answer: 1,
+        explanation: "Rapid Elasticity adalah kemampuan sumber daya cloud untuk melar (scale-out) dan menyusut (scale-in) secara cepat dan otomatis."
+      },
+      {
+        q: "Siapakah hewan temannya buaya?",
+        options: ["Marmut", "Sapi", "Cicak", "Komodo"],
+        answer: 3,
+        explanation: "Komodo merupakan hewan temannya buaya, yang sering digambar oleh Adam."
+      },
+      {
+        q: "Dalam analogi ala pizza di slide kita tadi, PaaS (seperti Heroku atau Google App Engine) diibaratkan seperti...",
+        options: [
+          "Sewa dapur kosong, bahan dan resep urusan sendiri",
+          "Dapur lengkap plus adonan siap, tinggal meracik topping",
+          "Pesan pizza jadi, tinggal makan",
+          "Beli bahan baku di pasar dan bangun oven sendiri"
+        ],
+        answer: 1,
+        explanation: "Di PaaS, platform/dapur dan adonan sudah disiapkan provider, kita tinggal meracik topping (kode aplikasi) saja."
+      },
+      {
+        q: "Kamu push kode aplikasi web ke GitHub, lalu Vercel langsung melakukan build dan deploy otomatis tanpa kamu mengatur server Linux-nya. Vercel di sini berperan sebagai...",
+        options: ["PaaS (Platform as a Service)", "IaaS (Infrastructure as a Service)", "SaaS (Software as a Service)", "Private Cloud"],
+        answer: 0,
+        explanation: "Vercel menyediakan platform runtime siap pakai sehingga developer cukup fokus pada kode aplikasi (PaaS)."
+      },
+      {
+        q: "Apa yang dilakukan Prama ketika senggang (di kelas)?",
+        options: ["Belajar", "Mancing", "Tidur", "Memutari kelas sambil berjoget ringan"],
+        answer: 3,
+        explanation: "Betul sekali! Ketika senggang, Prama memutari kelas sambil berjoget ringan."
+      },
+      {
+        q: "Dalam arsitektur Sistem Terdistribusi di Cloud, komponen apa yang bertugas membagi jutaan request pengguna secara merata ke beberapa node server agar tidak overload?",
+        options: ["Hypervisor", "Load Balancer", "Object Storage", "DNS Resolver"],
+        answer: 1,
+        explanation: "Load Balancer bertindak sebagai pengatur lalu lintas jaringan yang mendistribusikan beban kerja ke banyak server."
+      },
+      {
+        q: "Pada lapisan teknologi di balik layar, komponen apa yang bertugas mengatur dan mengelola banyak container Docker secara otomatis?",
+        options: ["Kubernetes", "Hypervisor", "Load Balancer", "OpenStack"],
+        answer: 0,
+        explanation: "Docker bertugas membungkus aplikasi ke dalam container, sedangkan Kubernetes yang mengatur orkestrasi container-nya."
+      },
+      {
+        q: "Siapakah Dosen pengampu mata kuliah Sistem Terdistribusi?",
+        options: [
+          "Bapak Abdun",
+          "Bapak Rizki Lahh",
+          "Bapak Heru",
+          "Bapak Darwan"
+        ],
+        answer: 1,
+        explanation: "Tepat! Bapak Ir. Rizki Dewantara, S.kom, M.Kom adalah Dosen pengampu mata kuliah Sistem Terdistribusi."
+      }
+    ];
+
+    const TIME_LIMIT = 15;
+    let currentIdx = 0;
+    let score = 0;
+    let correctCount = 0;
+    let totalTimeUsed = 0;
+    let timerInterval = null;
+    let timeLeft = TIME_LIMIT;
+    let playerName = "";
+    let answered = false;
+
+    const startScreen = document.getElementById("start-screen");
+    const quizScreen = document.getElementById("quiz-screen");
+    const resultScreen = document.getElementById("result-screen");
+    const playerSelect = document.getElementById("player-select");
+    const nameErrorMsg = document.getElementById("name-error-msg");
+    const startBtn = document.getElementById("start-btn");
+    const viewLbBtn = document.getElementById("view-lb-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const backHomeBtn = document.getElementById("back-home-btn");
+    const refreshLbBtn = document.getElementById("refresh-lb-btn");
+
+    const newPlayerForm = document.getElementById("new-player-form");
+    const lockedNotice = document.getElementById("locked-notice");
+    const lockedDetailText = document.getElementById("locked-detail-text");
+
+    const questionCounter = document.getElementById("question-counter");
+    const currentScoreEl = document.getElementById("current-score");
+    const timerBar = document.getElementById("timer-bar");
+    const questionText = document.getElementById("question-text");
+    const optionsList = document.getElementById("options-list");
+    const feedbackBox = document.getElementById("feedback-box");
+    const leaderboardList = document.getElementById("leaderboard-list");
+
+    function populatePlayerDropdown() {
+      GROUPS_DATA.forEach(item => {
+        const optgroup = document.createElement("optgroup");
+        optgroup.label = item.group;
+        item.members.forEach(member => {
+          const option = document.createElement("option");
+          const formattedLabel = `${member} - ${item.group}`;
+          option.value = formattedLabel;
+          option.textContent = formattedLabel;
+          optgroup.appendChild(option);
+        });
+        playerSelect.appendChild(optgroup);
+      });
+    }
+
+    populatePlayerDropdown();
+
+    function checkAttemptLock() {
+      const savedAttempt = JSON.parse(localStorage.getItem(LOCK_STORAGE_KEY) || "null");
+      if (savedAttempt) {
+        playerName = savedAttempt.name || "";
+        newPlayerForm.classList.add("hidden");
+        lockedNotice.classList.remove("hidden");
+        if (savedAttempt.inProgress) {
+          lockedDetailText.innerHTML = `Sesi atas nama <strong>${escapeHtml(savedAttempt.name)}</strong> sudah dimulai dan tidak dapat diulang kembali.`;
+        } else {
+          lockedDetailText.innerHTML = `Peserta <strong>${escapeHtml(savedAttempt.name)}</strong> sudah menyelesaikan kuis dengan skor <strong>${savedAttempt.score} pts</strong> (${savedAttempt.correct}/${questions.length} benar).`;
+        }
+        return true;
+      }
+      return false;
+    }
+
+    checkAttemptLock();
+
+    const qrModal = document.getElementById("qr-modal");
+    const qrcodeBox = document.getElementById("qrcode-box");
+    const qrUrlText = document.getElementById("qr-url-text");
+
+    function openQrModal() {
+      const currentUrl = window.location.href;
+      qrcodeBox.innerHTML = "";
+      qrUrlText.textContent = currentUrl;
+      new QRCode(qrcodeBox, {
+        text: currentUrl,
+        width: 200,
+        height: 200,
+        colorDark: "#03045e",
+        colorLight: "#f0f9ff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+      qrModal.classList.remove("hidden");
+    }
+
+    document.getElementById("open-qr-btn").addEventListener("click", openQrModal);
+    document.getElementById("open-qr-btn-2").addEventListener("click", openQrModal);
+    document.getElementById("close-qr-btn").addEventListener("click", () => qrModal.classList.add("hidden"));
+    qrModal.addEventListener("click", (e) => {
+      if (e.target === qrModal) qrModal.classList.add("hidden");
+    });
+
+    function isSupabaseConfigured() {
+      return SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("GANTI-DENGAN") && SUPABASE_ANON_KEY.length > 20;
+    }
+
+    async function isNameAlreadyUsed(nameToCheck) {
+      if (isSupabaseConfigured()) {
+        try {
+          const cleanUrl = SUPABASE_URL.replace(/\/$/, "");
+          const res = await fetch(`${cleanUrl}/rest/v1/scores?name=eq.${encodeURIComponent(nameToCheck)}&select=id`, {
+            headers: {
+              "apikey": SUPABASE_ANON_KEY,
+              "Authorization": `Bearer ${SUPABASE_ANON_KEY}`
+            }
+          });
+          const data = await res.json();
+          return Array.isArray(data) && data.length > 0;
+        } catch (err) {
+          console.error("Gagal cek nama di Supabase:", err);
+        }
+      }
+      const localScores = JSON.parse(localStorage.getItem("cloud_quiz_scores") || "[]");
+      return localScores.some(item => item.name === nameToCheck);
+    }
+
+    startBtn.addEventListener("click", async () => {
+      if (checkAttemptLock()) return;
+
+      const val = playerSelect.value.trim();
+      if (!val) {
+        playerSelect.focus();
+        playerSelect.style.borderColor = "var(--danger-red)";
+        nameErrorMsg.textContent = "Pilih Nama & Kelompok kamu dulu dari daftar!";
+        nameErrorMsg.style.display = "block";
+        return;
+      }
+
+      startBtn.disabled = true;
+      startBtn.textContent = "Memeriksa data...";
+      nameErrorMsg.style.display = "none";
+
+      const duplicate = await isNameAlreadyUsed(val);
+      if (duplicate) {
+        startBtn.disabled = false;
+        startBtn.textContent = "Aku Siap! Mulai Kuis 🧽";
+        playerSelect.style.borderColor = "var(--danger-red)";
+        nameErrorMsg.textContent = "Nama ini sudah pernah mengerjakan kuis! (Maksimal 1x)";
+        nameErrorMsg.style.display = "block";
+        return;
+      }
+
+      playerSelect.style.borderColor = "#90e0ef";
+      playerName = val;
+
+      localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify({
+        name: playerName,
+        inProgress: true,
+        score: 0,
+        correct: 0
+      }));
+
+      startBtn.disabled = false;
+      startBtn.textContent = "Aku Siap! Mulai Kuis 🧽";
+      startQuiz();
+    });
+
+    viewLbBtn.addEventListener("click", async () => {
+      startScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+
+      const savedAttempt = JSON.parse(localStorage.getItem(LOCK_STORAGE_KEY) || "null");
+      if (savedAttempt && !savedAttempt.inProgress) {
+        document.getElementById("my-score-summary").classList.remove("hidden");
+        document.getElementById("final-score").textContent = savedAttempt.score;
+        document.getElementById("display-player-name").textContent = savedAttempt.name;
+        document.getElementById("correct-count").textContent = `${savedAttempt.correct}/${questions.length}`;
+        document.getElementById("avg-time").textContent = `${savedAttempt.avg_time || 0}s`;
+      } else {
+        document.getElementById("my-score-summary").classList.add("hidden");
+      }
+
+      document.getElementById("result-badge").textContent = "🌊 Live Ranking";
+      await renderLeaderboard();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      currentIdx++;
+      if (currentIdx < questions.length) {
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    });
+
+    backHomeBtn.addEventListener("click", () => {
+      checkAttemptLock();
+      resultScreen.classList.add("hidden");
+      startScreen.classList.remove("hidden");
+    });
+
+    refreshLbBtn.addEventListener("click", async () => {
+      refreshLbBtn.textContent = "Memuat...";
+      await renderLeaderboard();
+      refreshLbBtn.textContent = "↻ Refresh";
+    });
+
+    function startQuiz() {
+      currentIdx = 0;
+      score = 0;
+      correctCount = 0;
+      totalTimeUsed = 0;
+      currentScoreEl.textContent = "0";
+      startScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      answered = false;
+      nextBtn.classList.add("hidden");
+      feedbackBox.classList.remove("show", "is-correct", "is-wrong");
+
+      const qData = questions[currentIdx];
+      questionCounter.textContent = `Soal ${currentIdx + 1} / ${questions.length}`;
+      questionText.textContent = qData.q;
+      optionsList.innerHTML = "";
+
+      const letters = ["A", "B", "C", "D"];
+      qData.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<strong>${letters[idx]}.</strong> <span>${opt}</span>`;
+        btn.addEventListener("click", () => selectOption(idx, btn));
+        optionsList.appendChild(btn);
+      });
+
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = TIME_LIMIT;
+      timerBar.style.width = "100%";
+      timerBar.style.backgroundColor = "var(--ocean-top)";
+
+      const step = 0.1;
+      timerInterval = setInterval(() => {
+        timeLeft = Math.max(0, timeLeft - step);
+        const pct = (timeLeft / TIME_LIMIT) * 100;
+        timerBar.style.width = `${pct}%`;
+
+        if (pct < 30) timerBar.style.backgroundColor = "var(--danger-red)";
+        else if (pct < 60) timerBar.style.backgroundColor = "var(--gold)";
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, step * 1000);
+    }
+
+    function selectOption(selectedIdx, selectedBtn) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerInterval);
+
+      const timeSpent = TIME_LIMIT - timeLeft;
+      totalTimeUsed += timeSpent;
+
+      const qData = questions[currentIdx];
+      const allBtns = optionsList.querySelectorAll(".option-btn");
+      allBtns.forEach(b => (b.disabled = true));
+
+      if (selectedIdx === qData.answer) {
+        selectedBtn.classList.add("correct");
+        correctCount++;
+        const speedBonus = Math.round((timeLeft / TIME_LIMIT) * 50);
+        const earned = 100 + speedBonus;
+        score += earned;
+        currentScoreEl.textContent = score;
+
+        feedbackBox.innerHTML = `<strong>Mantap! (+${earned} poin) 🧽</strong><br>${qData.explanation}`;
+        feedbackBox.classList.add("show", "is-correct");
+      } else {
+        selectedBtn.classList.add("wrong");
+        allBtns[qData.answer].classList.add("correct");
+        feedbackBox.innerHTML = `<strong>Kurang Tepat! 🦀</strong><br>${qData.explanation}`;
+        feedbackBox.classList.add("show", "is-wrong");
+      }
+
+      nextBtn.textContent = currentIdx === questions.length - 1 ? "Simpan & Lihat Top 10 🏆" : "Lanjut Menyelam →";
+      nextBtn.classList.remove("hidden");
+    }
+
+    function handleTimeout() {
+      if (answered) return;
+      answered = true;
+      totalTimeUsed += TIME_LIMIT;
+
+      const qData = questions[currentIdx];
+      const allBtns = optionsList.querySelectorAll(".option-btn");
+      allBtns.forEach(b => (b.disabled = true));
+      allBtns[qData.answer].classList.add("correct");
+
+      feedbackBox.innerHTML = `<strong>Waktu Habis! ⏰</strong><br>${qData.explanation}`;
+      feedbackBox.classList.add("show", "is-wrong");
+
+      nextBtn.textContent = currentIdx === questions.length - 1 ? "Simpan & Lihat Top 10 🏆" : "Lanjut Menyelam →";
+      nextBtn.classList.remove("hidden");
+    }
+
+    async function finishQuiz() {
+      quizScreen.classList.add("hidden");
+      resultScreen.classList.remove("hidden");
+      document.getElementById("my-score-summary").classList.remove("hidden");
+      document.getElementById("result-badge").textContent = "🎉 Misi Selesai!";
+
+      const avgTime = Number((totalTimeUsed / questions.length).toFixed(1));
+      document.getElementById("final-score").textContent = score;
+      document.getElementById("display-player-name").textContent = playerName;
+      document.getElementById("correct-count").textContent = `${correctCount}/${questions.length}`;
+      document.getElementById("avg-time").textContent = `${avgTime}s`;
+
+      const entry = {
+        name: playerName,
+        score: score,
+        correct: correctCount,
+        avg_time: avgTime
+      };
+
+      localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify({
+        ...entry,
+        inProgress: false
+      }));
+
+      checkAttemptLock();
+      await saveScore(entry);
+      await renderLeaderboard();
+    }
+
+      async function saveScore(entry) {
+        if (isSupabaseConfigured()) {
+          try {
+            const cleanUrl = SUPABASE_URL.replace(/\/$/, "");
+            const res = await fetch(`${cleanUrl}/rest/v1/scores`, {
+              method: "POST",
+              headers: getSupabaseHeaders({
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal"
+              }),
+              body: JSON.stringify(entry)
+            });
+            if (!res.ok) {
+              const errText = await res.text();
+              console.error("Supabase menolak simpan:", res.status, errText);
+            }
+            return;
+          } catch (err) {
+            console.error("Gagal simpan ke Supabase:", err);
+          }
+        }
+        const localScores = JSON.parse(localStorage.getItem("cloud_quiz_scores") || "[]");
+        localScores.push(entry);
+        localStorage.setItem("cloud_quiz_scores", JSON.stringify(localScores));
+      }
+
+      async function fetchTop10() {
+        if (isSupabaseConfigured()) {
+          try {
+            const cleanUrl = SUPABASE_URL.replace(/\/$/, "");
+            const res = await fetch(`${cleanUrl}/rest/v1/scores?select=*&order=score.desc,avg_time.asc&limit=10`, {
+              headers: getSupabaseHeaders()
+            });
+            const data = await res.json();
+            if (Array.isArray(data)) return data;
+          } catch (err) {
+            console.error("Gagal ambil data Supabase:", err);
+          }
+        }
+
+        const localScores = JSON.parse(localStorage.getItem("cloud_quiz_scores") || "[]");
+        localScores.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.avg_time - b.avg_time;
+        });
+        return localScores.slice(0, 10);
+      }
+
+    async function renderLeaderboard() {
+      leaderboardList.innerHTML = `<li style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px;">Menyelam mencari Top 10...</li>`;
+      const top10 = await fetchTop10();
+
+      if (top10.length === 0) {
+        leaderboardList.innerHTML = `<li style="text-align:center; color:var(--text-muted); font-size:0.85rem; padding:12px;">Belum ada skor masuk. Jadilah yang pertama! 🧽</li>`;
+        return;
+      }
+
+      leaderboardList.innerHTML = "";
+      top10.forEach((item, index) => {
+        const rank = index + 1;
+        const isMe = item.name === playerName;
+        const rankClass = rank === 1 ? "rank-1" : rank === 2 ? "rank-2" : rank === 3 ? "rank-3" : "";
+        const medal = rank === 1 ? "🥇" : rank === 2 ? "🥈" : rank === 3 ? "🥉" : rank;
+
+        const li = document.createElement("li");
+        li.className = `lb-item ${isMe ? "is-me" : ""}`;
+        li.innerHTML = `
+          <div class="lb-left">
+            <div class="lb-rank ${rankClass}">${medal}</div>
+            <div>
+              <div class="lb-name">${escapeHtml(item.name)} ${isMe ? "(Kamu)" : ""}</div>
+              <span class="lb-meta">${item.correct}/${questions.length} benar • ${item.avg_time}s</span>
+            </div>
+          </div>
+          <div class="lb-score">${item.score} pts</div>
+        `;
+        leaderboardList.appendChild(li);
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
